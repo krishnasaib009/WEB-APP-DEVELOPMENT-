@@ -1,0 +1,186 @@
+﻿@page
+@model SaleProducts.Pages.CreateModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+ViewData["Title"] = "Points Of Sales";
+}
+<head>
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+   
+
+</head>
+<body>  
+
+<h2 class="mb-4" style="text-align:center; padding-top:4%; text-decoration:underline; color:orangered">Add Product</h2>
+
+<div class="container mt-4">
+    <div class="card shadow rounded-4 mx-auto" style="max-width: 900px;">
+        <div class="card-header text-center bg-white border-0">
+            <h6 class="text-uppercase fw-bold" style="color: palevioletred; text-decoration:blink;">Product Detailed Form</h6>
+            <hr style="color:darkred" />
+        </div>
+            <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="card-body">
+             <form method="post" id="FetchForm">
+                  <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label asp-for="Product.ProductId"></label>
+                        <input type="text" name="FetchProductId"
+                               onkeydown="if (event.key === 'Enter') this.form.submit();"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                class="form-control border border-dark"
+                                value="@(Model.Product?.ProductId == 0 ? "" : Model.Product.ProductId.ToString())" 
+                                placeholder="Enter Exists Product ID & press Enter"
+                        @(Model.IsEditMode ? "readonly" : "") />
+                        <input asp-for="Product.ProductId" type="hidden" style="display: none;"/>
+                        </div>
+                    <div class="col-md-4">
+                        <label asp-for="Product.ProductName"></label>
+                        <input asp-for ="Product.ProductName" class="form-control border border-dark" id="prdName" value="@Model.Product?.ProductName" placeholder="Enter Item Name" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Product.SellingPrice"></label>
+                        <input oninput="this.value = this.value.replace(/[^0-9.]/g, '')"
+                        asp-for="Product.SellingPrice" class="form-control border border-dark" value="@(Model.Product?.SellingPrice == 0 ? "" : Model.Product.SellingPrice.ToString())" placeholder="Enter Product Price" required />
+                    </div>
+
+                  </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                        <label asp-for="Product.Packages"></label>
+                        <input asp-for="Product.Packages" type="text" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="form-control border border-dark" value="@(Model.Product?.Packages == 0 ? "" : Model.Product.Packages.ToString())" placeholder="Enter No. of Packages" required />
+                        </div>
+                        <div class="col-md-4">
+                        <label asp-for="Product.Barcode"></label>
+                        <input asp-for="Product.Barcode" inputmode="numeric" pattern="[0-9]*" class="form-control border border-dark" value="@Model.Product?.Barcode" placeholder="Scan or Enter Product Barcode" />
+                        <span asp-validation-for="Product.Barcode" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <hr />
+                <div class="row pt-3">
+                    <div class="col text-end">
+                            @if (Model.IsEditMode)
+                            {
+                            <button type="submit" style="border-radius:10px;" class="btn btn-outline-primary px-4" asp-page-handler="Update"><i class="bi bi-database-add me-1"></i>Update</button>
+
+                            <button type="submit" style="border-radius:10px;" class="btn btn-outline-danger ms-2 px-4" asp-page-handler="Cancel"><i class="bi bi-x-square me-1"></i>Cancel</button>
+                            }
+                            else
+                            {
+                                <a href="/Create" style="border-radius:10px;" class="btn btn-outline-warning ms-2 px-4"><i class="bi bi-plus-square me-1"></i>Add New</a>
+                            <button type="submit" style="border-radius:10px;" class="btn btn-outline-success ms-2 px-4" asp-page-handler="Save"><i class="bi bi-floppy2 me-1"></i>Save</button>
+                                <button type="submit" style="border-radius:10px;" name="SelectedIds" asp-page-handler="SelectedDelete" onclick="return validateSelection();" class="btn btn-outline-danger ms-2 px-4">
+
+                                   
+                                    <i class="bi bi-trash-fill me-1"></i>
+                                Delete Selected
+                            </button>
+
+                            }
+                    </div>
+                </div>
+             </form>
+        </div>
+    </div>
+</div>
+<hr />
+    <h2 style="text-align:center; text-decoration:underline; color:orangered">Product List</h2>
+        <table id="productsTable" class="table table-bordered table-striped mt-3">
+             <thead class="table-dark">
+                 <tr>
+                    <th>
+                        <input type="checkbox" id="selectAll" />
+                    </th>
+                         <th>Product ID</th>
+                         <th>Product Name</th>
+                         <th>Selling Price</th>
+                         <th>Packages</th>
+                         <th>Barcode</th>
+                         <th>Actions</th>
+                 </tr>
+              </thead>
+                    <tbody>
+                         @foreach (var item in Model.ProductList)
+                            {
+                              <tr>
+                                 <td>
+                                 <input type="checkbox" class="rowCheckbox" />
+                                 </td>
+                                <td>@item.ProductId</td>
+                                <td><span class="product-name-highlight">@item.ProductName</span></td>
+                                <td>@item.SellingPrice</td>
+                                <td>@item.Packages</td> 
+                                <td>@item.Barcode</td>
+                                 <td>
+                                   <form method="post" style="display:inline;">
+                                      <input type="hidden" name="id" value="@item.ProductId" />
+                                     <button type="submit" style="border-radius:10px;" class="btn btn-sm btn-primary" asp-page-handler="Edit"><i class="bi bi-pencil me-1"></i>Edit</button>
+                                   </form>
+                                       <span> | </span>
+                                      <form method="post" style="display:inline;">
+                                       <input type="hidden" name="id" value="@item.ProductId" />
+                                    <button type="submit" style="border-radius:10px;" class="btn btn-sm btn-danger" asp-page-handler="Delete" onclick="return confirm('Are you sure?You want to Delete this product?')">
+                                            <i class="bi bi-trash me-1"></i>
+                                            Delete
+                                    </button>
+                                      </form>
+                                <span> | </span>
+                        <button type="button" class="btn btn-dark" onclick="window.open('/Print?id=@item.ProductId', '_blank')" style="border-radius:10px;"><i class="bi bi-printer-fill me-1"></i>Print</button>
+                                 </td>
+                              </tr>
+                           }
+                    </tbody>
+       </table>
+
+
+      <!-- SERVER-SIDE PAGINATION -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center mt-3">
+            <!-- Previous Button -->
+            <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                <a class="page-link" asp-page="./Create" asp-route-PageNumber="@(Model.CurrentPage - 1)">Previous</a>
+            </li>
+
+            <!-- Page Numbers -->
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                    <a class="page-link" asp-page="./Create" asp-route-PageNumber="@i">@i</a>
+                </li>
+            }
+
+            <!-- Next Button -->
+            <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                <a class="page-link" asp-page="./Create" asp-route-PageNumber="@(Model.CurrentPage + 1)">Next</a>
+            </li>
+        </ul>
+    </nav>
+</body>
+  <script>
+        @section Scripts {
+                <partial name="_ValidationScriptsPartial" />
+        }
+        document.getElementById("selectAll").addEventListener("change" , function(){
+            const isChecked = this.checked;
+            document.querySelectorAll(".rowCheckbox").forEach(function (checkbox){
+                checkbox.checked = isChecked;
+            });
+        });
+
+        window.onload = function (){
+            document.getElementById("prdName").focus();
+        };
+        function validateSelection(){
+            const checkboxes = document.querySelectorAll('input[name="SelectedIds"]:checked');
+
+            if(checkboxes.length === 0){
+                alert("Please select at least one record to be deleted.");
+                return false;
+            }
+            else{
+                return confirm("Are you sure you want to delete the selected record/(s)?");
+            }
+        }
+  </script>

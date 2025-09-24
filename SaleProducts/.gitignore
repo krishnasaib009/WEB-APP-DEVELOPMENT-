@@ -1,0 +1,47 @@
+# Visual Studio user-specific files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build results
+bin/
+obj/
+Generated_Code/
+
+# VS Code settings
+.vscode/
+
+# Rider settings
+.idea/
+
+# ASP.NET publish output
+wwwroot/dist/
+wwwroot/node_modules/
+node_modules/
+
+# Logs
+*.log
+
+# Database files
+*.mdf
+*.ldf
+*.dbmdl
+*.bak
+
+# Environment variables
+.env
+.env.*
+
+# Lock files
+*.lock.json
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Visual Studio index files
+*.vspx
+*.vsidx

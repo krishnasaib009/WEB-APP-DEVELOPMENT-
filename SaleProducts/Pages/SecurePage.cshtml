@@ -1,0 +1,5 @@
+﻿@page
+@using Microsoft.AspNetCore.Authorization
+@model SaleProducts.Pages.SecurePageModel
+@attribute [Authorize]
+<h1>This page is protected with JWT</h1>
